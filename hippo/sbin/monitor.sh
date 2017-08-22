@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+
+export APP_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
+
+HIPPO_DIR=${APP_HOME}/hippo
+HIPPO_BIN_DIR=${HIPPO_DIR}/bin
+HIPPO_CONF_DIR=${HIPPO_DIR}/etc
+
+. "${HIPPO_BIN_DIR}/utils.sh"
+. "${HIPPO_CONF_DIR}/env.sh"
+
+function usage ()
+{
+    echo "[monitor]
+    Usage: `basename $0` -t <interval>
+    OPTIONS:
+       -h|--help                  Show this message
+       -i|--interval <interval>   Monitor interval seconds, (default: 5)
+    "
+}
+
+args=`getopt -o hi: --long interval:,help:: \
+     -n 'monitor' -- "$@"`
+
+if [ $? != 0 ] ; then
+  echo "terminating..." >&2 ;
+  exit 1 ;
+fi
+
+eval set -- "$args"
+
+while true; do
+  case $1 in
+    -i|--interval)
+      INTERVAL=$2
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit
+      ;;
+    --)
+      shift;
+      break
+      ;;
+  esac
+done
+
+for arg do
+   PROJECT_NAME=$arg
+done
+
+# check for required args
+if [[ -z $PROJECT_NAME ]] ; then
+  echo "$(basename $0): missing SERVICE"
+  usage
+  exit 1
+fi
+
+if [[ -z $INTERVAL ]] ; then
+  INTERVAL=5
+fi
+log_info "INTERVAL is $INTERVAL"
+err_cnt=1
+is_success=0
+error_msg=''
+while [[ True ]]; do
+
+  sleep $INTERVAL
+  # start monitor
+  status_retout=$(${HIPPO_BIN_DIR}/run-service.sh --status $PROJECT_NAME)
+  status_retcode=$?
+  if [[ $status_retcode -eq 1 ]]; then
+   log_warn "restart service..."
+   restart_retout=$(${HIPPO_BIN_DIR}/run-service.sh --restart $PROJECT_NAME)
+   restart_retcode=$?
+   log_warn "restart_retout : $restart_retout"
+   log_warn "restart_retcode : $restart_retcode"
+
+
+    if [[ $status_retcode -eq 1 ]]; then
+     is_success=0
+     error_msg=$restart_retout
+    fi
+
+  else
+    is_success=1
+    # parse pid ,e.g. hippos.service.test1 is running : 8880
+    service_pid=$(echo $status_retout | awk -F ":" '{print $2}' | awk 'gsub(/^[[:blank:]]+|[[:blank:]]+$/,"")')
+    # get detailed service information
+    #TODO
+  fi
+
+  # send message to kafka
+  own_pid=$$
+  path=$APP_HOME
+  service_name=$PROJECT_NAME
+  exec_time=`date +%s`
+
+  message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$service_name\",\"monitor_pid\":\"$own_pid\",\"service_pid\":\"$service_pid\",\"exec_time\":\"$exec_time\",\"is_success\":\"$is_success\",\"error_msg\":\"$error_msg\"}"
+  producer_cmd="$KAFKA_PRODUCER --broker-list ${KAFKA_HOST} --topic ${HEALTH_TOPIC}"
+  #echo ${message} "|" ${producer_cmd}
+
+  log_info "${message} | ${producer_cmd}"
+  send_msg_retout=$(echo ${message} | ${producer_cmd})
+
+done
+echo "Finished."
