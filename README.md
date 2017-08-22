@@ -19,8 +19,9 @@ Hippo Plugin 是一個結合 Hippo Manager ，讓 microservice 達到監控與�
 mv hippo your-service-root/
 ```
 
-### 設定 Kafka 相關資訊
+### 填寫 Kafka 相關資訊
 
+於 `hippo/etc/env.sh`
 
 | name        |     description     |
 | :----------- | :-----------|
@@ -49,7 +50,7 @@ function start() {
     usage
     exit 1
   fi
-  
+
   cmd="sh ${RUN_DIR}/test_socket.sh"
   sh ${HIPPO_SBIN_DIR}/daemon.sh $PROJECT_NAME start 1 $cmd
 }
@@ -128,6 +129,3 @@ monitor-status SERVICE
 ```shell
 monitor-status hippo.service.test1
 ```
-
-
-
