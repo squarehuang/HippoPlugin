@@ -9,6 +9,15 @@ Hippo Plugin 是一個結合 Hippo Manager ，讓 microservice 達到監控與�
 | hoppo | hippo plugin |
 | test | 示範程式碼，Demo 一個 microservice 與 hippo pluing 的使用方式|
 
+## 前置作業
+
+### 若為 MacOS 需安裝與 linux 一致的 getopt
+
+```shell=
+brew install gnu-getopt
+echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
+```
+
 ## Installation
 
 ### service 專案內加入 hippo 資料夾
@@ -75,7 +84,7 @@ monitor-start [OPTIONS] SERVICE
 | short | command                   | description                                                                                                                                                                                                        | Default | Required |
 | :---- | :------------------------ | :--------------------------------------------------------------------------------------------------------------- | :----- | :-----                                                                                                |
 | -h    | --help                    | Show help, exit                                                                                                                                                                                                    |        |        |
-| -i    | --interval                 | 監控的間隔(秒)                                                                                                                                                                                        |        |FALSE   |
+| -i    | --interval                 | 監控的間隔(秒)                                                                                                                                                                                        |        |TRUE   |
 |-r     | --restart                  | 重啟服務模式        |FALSE   |FALSE   |
 
 
