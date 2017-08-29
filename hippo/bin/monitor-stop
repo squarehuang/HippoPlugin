@@ -69,22 +69,31 @@ if [[ -z $PROJECT_NAME ]] ; then
 fi
 
 function stop() {
-  stop_monitor
+  monitor_retout=$(stop_monitor)
   monitor_retcode=$?
-  stop_service
+  service_retout=$(stop_service)
   service_retcode=$?
 
-  if [[ $monitor_retcode -eq 0 && $service_retcode -eq 0 ]]; then
+  if [[ $monitor_retcode == 0 && $service_retcode == 0 ]]; then
     RETVAL=0
-  elif [[ $monitor_retcode -eq 2 && $service_retcode -eq 2 ]]; then
+  elif [[ $monitor_retcode == 2 && $service_retcode == 2 ]]; then
     RETVAL=2
-  elif [[ $monitor_retcode -eq 2 && $service_retcode -eq 0 ]]; then
+  elif [[ $monitor_retcode == 2 && $service_retcode == 0 ]]; then
     RETVAL=2
-  elif [[ $monitor_retcode -eq 0 && $service_retcode -eq 2 ]]; then
+  elif [[ $monitor_retcode == 0 && $service_retcode == 2 ]]; then
     RETVAL=2
   else
     RETVAL=1
   fi
+
+  if [[ $RETVAL == 0 ]]; then
+    echo $monitor_retout
+    echo $service_retout
+  else
+    >&2 echo $monitor_retout
+    >&2 echo $service_retout
+  fi
+
   exit $RETVAL
 
 }
