@@ -94,8 +94,8 @@ if [[ -z $IS_RESTART ]] ; then
 fi
 
 function start() {
-  cmd="sh ${HIPPO_SBIN_DIR}/monitor.sh -i $INTERVAL $SUB_PROJECT_NAME"
-  service_retout=$(${HIPPO_BIN_DIR}/run-${SUB_PROJECT_NAME}.sh --start)
+  cmd="sh ${HIPPO_SBIN_DIR}/monitor.sh -i $INTERVAL $PROJECT_NAME"
+  service_retout=$(${HIPPO_BIN_DIR}/run-service.sh --start $PROJECT_NAME)
   service_retcode=$?
   monitor_retout=$(${HIPPO_SBIN_DIR}/daemon.sh $MONITOR start 1 $cmd)
   monitor_retcode=$?
