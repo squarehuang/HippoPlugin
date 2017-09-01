@@ -3,7 +3,7 @@
 
 export APP_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
 
-MONITOR="Monitor"
+MONITOR_PREFIX="Monitor-"
 HIPPO_DIR=${APP_HOME}/hippo
 HIPPO_BIN_DIR=${HIPPO_DIR}/bin
 HIPPO_SBIN_DIR=${HIPPO_DIR}/sbin
@@ -28,7 +28,7 @@ done < ${HIPPO_CONF_DIR}/env.sh
 function usage ()
 {
     temp_serivce_name="$(basename ${APP_HOME})"
-    echo "[monitor-ps]
+    echo "[monitor-status]
     Usage: `basename $0 ` SERVICE
     e.g. `basename $0` "$temp_serivce_name"
     "
@@ -60,15 +60,16 @@ while true ; do
 done
 
 for arg do
-   PROJECT_NAME=$arg
+   SERVICE_NAME=$arg
 done
 
 # check for required args
-if [[ -z $PROJECT_NAME ]] ; then
+if [[ -z $SERVICE_NAME ]] ; then
   echo "$(basename $0): missing SERVICE"
   usage
   exit 1
 fi
+MONITOR="${MONITOR_PREFIX}${SERVICE_NAME}"
 
 function status() {
   monitor_retout=$(status_monitor)
@@ -90,6 +91,7 @@ function status() {
   fi
 
   exit $RETVAL
+
 }
 
 function status_monitor() {
@@ -97,7 +99,7 @@ function status_monitor() {
 }
 
 function status_service() {
-  sh ${HIPPO_SBIN_DIR}/daemon.sh $PROJECT_NAME status 1
+  sh ${HIPPO_SBIN_DIR}/daemon.sh $SERVICE_NAME status 1
 }
 
 
