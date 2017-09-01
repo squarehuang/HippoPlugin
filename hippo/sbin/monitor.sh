@@ -2,6 +2,7 @@
 
 export APP_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
 
+PROJECT_NAME="$(basename ${APP_HOME})"
 HIPPO_DIR=${APP_HOME}/hippo
 HIPPO_BIN_DIR=${HIPPO_DIR}/bin
 HIPPO_CONF_DIR=${HIPPO_DIR}/etc
@@ -47,15 +48,18 @@ while true; do
 done
 
 for arg do
-   PROJECT_NAME=$arg
+   SERVICE_NAME=$arg
 done
 
 # check for required args
-if [[ -z $PROJECT_NAME ]] ; then
+if [[ -z $SERVICE_NAME ]] ; then
   echo "$(basename $0): missing SERVICE"
   usage
   exit 1
 fi
+
+# parse SUB_PROJECT_NAME
+SUB_PROJECT_NAME=$(echo ${SERVICE_NAME} | sed -e "s/${PROJECT_NAME}-//g" )
 
 if [[ -z $INTERVAL ]] ; then
   INTERVAL=5
@@ -63,24 +67,26 @@ fi
 log_info "INTERVAL is $INTERVAL"
 err_cnt=1
 is_success=0
-error_msg=''
-while [[ True ]]; do
 
+while [[ True ]]; do
   sleep $INTERVAL
+  error_msg=''
   # start monitor
-  status_retout=$(${HIPPO_BIN_DIR}/run-service.sh --status $PROJECT_NAME)
+  status_retout=$(${HIPPO_BIN_DIR}/${SUB_PROJECT_NAME}/run-${PROJECT_NAME}-${SUB_PROJECT_NAME}.sh --status)
   status_retcode=$?
   if [[ $status_retcode -eq 1 ]]; then
    log_warn "restart service..."
-   restart_retout=$(${HIPPO_BIN_DIR}/run-service.sh --restart $PROJECT_NAME)
+   restart_retout=$(${HIPPO_BIN_DIR}/${SUB_PROJECT_NAME}/run-${PROJECT_NAME}-${SUB_PROJECT_NAME}.sh --restart)
    restart_retcode=$?
    log_warn "restart_retout : $restart_retout"
    log_warn "restart_retcode : $restart_retcode"
 
 
-    if [[ $status_retcode -eq 1 ]]; then
+    if [[ $restart_retcode -eq 1 ]]; then
      is_success=0
      error_msg=$restart_retout
+    else
+     is_success=1
     fi
 
   else
@@ -94,10 +100,9 @@ while [[ True ]]; do
   # send message to kafka
   own_pid=$$
   path=$APP_HOME
-  service_name=$PROJECT_NAME
   exec_time=`date +%s`
 
-  message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$service_name\",\"monitor_pid\":\"$own_pid\",\"service_pid\":\"$service_pid\",\"exec_time\":\"$exec_time\",\"is_success\":\"$is_success\",\"error_msg\":\"$error_msg\"}"
+  message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":\"$own_pid\",\"service_pid\":\"$service_pid\",\"exec_time\":\"$exec_time\",\"is_success\":\"$is_success\",\"error_msg\":\"$error_msg\"}"
   producer_cmd="$KAFKA_PRODUCER --broker-list ${KAFKA_HOST} --topic ${HEALTH_TOPIC}"
   #echo ${message} "|" ${producer_cmd}
 
