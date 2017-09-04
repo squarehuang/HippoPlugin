@@ -137,16 +137,16 @@ monitor-start [OPTIONS] SERVICE
 
 #### Example
 
-啟動監控間隔 60 秒的 service `hippo.service.test1`
+啟動監控間隔 60 秒的 service `hippos.service.test1-training`
 
 ```shell=
-monitor-start -i 60 hippo.service.test1
+monitor-start -i 60 hippos.service.test1-training
 ```
 
-重新啟動一個監控間隔 30 秒的 service `hippo.service.test1`
+重新啟動一個監控間隔 30 秒的 service `hippos.service.test1-training`
 
 ```shell
-monitor-start -r -i 30 hippo.service.test1
+monitor-start -r -i 30 hippos.service.test1-training
 ```
 
 ### monitor-stop
@@ -161,10 +161,10 @@ monitor-stop SERVICE
 
 #### Example
 
-暫停 service `hippo.service.test1`
+暫停 service `hippos.service.test1-training`
 
 ```shell
-monitor-stop hippo.service.test1
+monitor-stop hippos.service.test1-training
 ```
 
 
@@ -180,8 +180,8 @@ monitor-status SERVICE
 
 #### Example
 
-檢查 service `hippo.service.test1` 狀態
+檢查 service `hippos.service.test1-training` 狀態
 
 ```shell
-monitor-status hippo.service.test1
+monitor-status hippos.service.test1-training
 ```
