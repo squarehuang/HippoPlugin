@@ -32,7 +32,7 @@ function usage ()
     "
 }
 
-args=`getopt -o h --long help:: -n 'monitor-stop' -- "$@"`
+args=`getopt -o h --long help -n 'monitor-stop' -- "$@"`
 
 if [ $? != 0 ] ; then
   echo "terminating..." >&2 ;

@@ -40,7 +40,7 @@ function usage ()
 }
 
 
-args=`getopt -o rhi: --long interval:,restart::,help:: \
+args=`getopt -o rhi: --long interval:,restart,help \
      -n 'monitor-run' -- "$@"`
 
 if [ $? != 0 ] ; then

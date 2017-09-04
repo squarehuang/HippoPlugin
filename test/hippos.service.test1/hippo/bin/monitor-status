@@ -34,7 +34,7 @@ function usage ()
     "
 }
 
-args=`getopt -o h --long help:: -n 'monitor-status' -- "$@"`
+args=`getopt -o h --long help -n 'monitor-status' -- "$@"`
 
 if [ $? != 0 ] ; then
   echo "terminating..." >&2 ;

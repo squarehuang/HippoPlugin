@@ -8,7 +8,6 @@ HIPPO_BIN_DIR=${HIPPO_DIR}/bin
 HIPPO_CONF_DIR=${HIPPO_DIR}/etc
 
 . "${HIPPO_BIN_DIR}/utils.sh"
-. "${HIPPO_CONF_DIR}/env.sh"
 
 function usage ()
 {
@@ -20,7 +19,7 @@ function usage ()
     "
 }
 
-args=`getopt -o hi: --long interval:,help:: \
+args=`getopt -o hi: --long interval:,help \
      -n 'monitor' -- "$@"`
 
 if [ $? != 0 ] ; then
