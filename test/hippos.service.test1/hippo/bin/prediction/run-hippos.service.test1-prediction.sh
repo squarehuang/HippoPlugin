@@ -63,19 +63,15 @@ fi
 
 case "$1" in
     --start)
-      shift
       start
       ;;
     --stop)
-      shift
       stop
       ;;
     --status)
-      shift
       status
       ;;
     --restart)
-      shift
       restart
       ;;
     -h | --help)

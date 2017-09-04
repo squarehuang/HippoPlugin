@@ -39,33 +39,80 @@ mv hippo your-service-root/
 | HEALTH_TOPIC | 傳送監控資訊的 topic |
 
 ```shell
+SERVICE_LIST=""
+
 KAFKA_PRODUCER=/Users/square_huang/Documents/Software/kafka_2.10-0.9.0.0/bin/kafka-console-producer.sh
 KAFKA_HOST=localhost:9092
 HEALTH_TOPIC=service-health
 ```
 
-### 設定執行 service 的 command
+### 新增一個 service
 
-於 `hippo/bin/run-service.sh` 編輯 `RUN_DIR` 與`cmd`
+於 `hippo/build-tool`執行 `build-service.sh`
 
-```shell
-RUN_DIR=${APP_HOME}/sbin
-...
-...
-function start() {
-  PROJECT_NAME=$1
-  if [[ -z $PROJECT_NAME ]] ; then
-    echo "$(basename $0): missing SERVICE"
-    usage
-    exit 1
-  fi
-
-  cmd="sh ${RUN_DIR}/test_socket.sh"
-  sh ${HIPPO_SBIN_DIR}/daemon.sh $PROJECT_NAME start 1 $cmd
-}
+```
+./build-service.sh --create-service evaluation
 ```
 
+### 設定執行 service 的 command
+
+於 `hippo/etc/training/hippos.service.test1-training-env.sh` 編輯 `EXECUTE_CMD`
+
+```shell
+# You can use APP_HOME variable to build command
+EXECUTE_CMD="sh ${APP_HOME}/sbin/mock_training.sh"
+...
+
+
 ## HOW TO USE
+
+### build-service
+
+新增/刪除/查詢 Project 內的 Service
+build-tool/build-service.sh
+
+#### Usage
+
+```shell
+build-service.sh [OPTIONS] SERVICE
+```
+
+#### Options
+
+| short | command                   | description                                                                                                                                                                                                        | Default | Required |
+| :---- | :------------------------ | :--------------------------------------------------------------------------------------------------------------- | :----- | :-----                                                                                                |
+| -h    | --help                    | Show help, exit                                                                                                                                                                                                    |        |        |
+| -c    | --create-service  <SUB_PROJECT_NAME>        | 新增一個 service        |        |TRUE   |
+| -d    | --delete-service   <SUB_PROJECT_NAME>       | 刪除一個 Service        |        |FALSE   |
+| -l    | --list-services                             | 列出 Project 內的 Service        |        |FALSE   |
+
+#### Example
+
+新增一個 SUB_PROJECT_NAME `evaluation` 的 Service
+
+```shell=
+build-service.sh --create-service evaluation
+```
+
+刪除一個 SUB_PROJECT_NAME `evaluation` 的 Service
+
+```shell=
+build-service.sh --delete-service evaluation
+```
+
+查詢 Project 內的 Service
+
+```shell=
+build-service.sh --list-services evaluation
+```
+
+Output
+
+```shell=
+PROJECT_NAME                             SUB_PROJECT_NAME                         SERVICE_NAME
+hippos.service.test1                     prediction                               hippos.service.test1-prediction
+hippos.service.test1                     training                                 hippos.service.test1-training
+```
 
 ### monitor-start
 
