@@ -34,7 +34,7 @@ function usage ()
     e.g. `basename $0` -i 60 "$temp_serivce_name"
     OPTIONS:
        -h|--help                  Show this message
-       -i|--interval <interval>   Monitor interval seconds,required
+       -i|--interval=interval     Monitor interval seconds,required
        -r|--restart               Restart monitor, (default: false)
     "
 }
