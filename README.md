@@ -20,12 +20,12 @@ echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
 
 ## Installation
 
-### service 專案內加入 hippo 資料夾
+### 於開發專案內加入 hippo plugin
 
-複製 `hippo` 資料夾到 `your-service-root/`
+於 `hippo/build-tool` 資料夾執行 `build.sh`
 
 ```shell=
-mv hippo your-service-root/
+./build.sh --install $your-project-root
 ```
 
 ### 填寫 Kafka 相關資訊
@@ -48,10 +48,10 @@ HEALTH_TOPIC=service-health
 
 ### 新增一個 service
 
-於 `hippo/build-tool`執行 `build-service.sh`
+於 `hippo/build-tool`執行 `build.sh`
 
-```
-./build-service.sh --create-service evaluation
+```shell=
+./build.sh --create-service evaluation $your-project-root
 ```
 
 ### 設定執行 service 的 command
