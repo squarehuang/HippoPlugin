@@ -15,11 +15,9 @@ function delete_service(){
     delete_service_func $1
 }
 function list_services(){
-    # log_info "list services"
     list_services_func
 }
 function check_service(){
-    # log_info "list services"
     check_service_func $1
 }
 
@@ -29,10 +27,11 @@ function usage ()
     Usage: `basename $0`
     e.g. `basename $0`
     OPTIONS:
-       -h|--help           Show this message
-       -c|--create-service <SUB_PROJECT_NAME>  Create a service
-       -d|--delete-service <SUB_PROJECT_NAME>  Delete a service
-       -l|--list-services  List services
+       -h|--help                             Show this message
+       -c|--create-service=SUB_PROJECT_NAME  Create a service
+       -d|--delete-service=SUB_PROJECT_NAME  Delete a service
+       -l|--list-services                    List services
+       --check-service <SUB_PROJECT_NAME>    Check service existed by SUB_PROJECT_NAME
     "
 }
 args=`getopt -o hlc:d: --long create-service:,delete-service:,check-service:,list-services,help \

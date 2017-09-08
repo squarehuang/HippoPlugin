@@ -13,13 +13,13 @@ function usage ()
     Usage: `basename $0` [OPTIONS] PROJECT_PATH
     e.g. `basename $0` --install /apps/hippo_service_test1
     OPTIONS:
-       -h|--help           Show this message
-       -i|--install
-       --check-install     Check Plugin install on PROJECT_PATH
-       -c|--create-service <SUB_PROJECT_NAME>  Create a service by SUB_PROJECT_NAME
-       -d|--delete-service <SUB_PROJECT_NAME>  Delete a service by SUB_PROJECT_NAME
-       -l|--list-services  List services
-       --check-service <SUB_PROJECT_NAME>  Check service existed by SUB_PROJECT_NAME
+       -h|--help                             Show this message
+       -i|--install                          Install Hippo Plugin to PROJECT_PATH
+       --check-install                       Check Plugin install on PROJECT_PATH
+       -c|--create-service=SUB_PROJECT_NAME  Create a service by SUB_PROJECT_NAME
+       -d|--delete-service=SUB_PROJECT_NAME  Delete a service by SUB_PROJECT_NAME
+       -l|--list-services                    List services
+       --check-service=SUB_PROJECT_NAME      Check service existed by SUB_PROJECT_NAME
     "
 }
 args=`getopt -o ilhc:d: --long create-service:,delete-service:,check-service:,list-services,install,check-install,help \
