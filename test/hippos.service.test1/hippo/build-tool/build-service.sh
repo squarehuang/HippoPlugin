@@ -18,6 +18,10 @@ function list_services(){
     # log_info "list services"
     list_services_func
 }
+function check_service(){
+    # log_info "list services"
+    check_service_func $1
+}
 
 function usage ()
 {
@@ -27,11 +31,11 @@ function usage ()
     OPTIONS:
        -h|--help           Show this message
        -c|--create-service <SUB_PROJECT_NAME>  Create a service
-       -d|--delete-service <SUB_PROJECT_NAME>  Delete a service 
+       -d|--delete-service <SUB_PROJECT_NAME>  Delete a service
        -l|--list-services  List services
     "
 }
-args=`getopt -o hlc:d: --long create-service:,delete-service:,list-services,help \
+args=`getopt -o hlc:d: --long create-service:,delete-service:,check-service:,list-services,help \
      -n 'build' -- "$@"`
 
 if [ $? != 0 ] ; then
@@ -47,6 +51,16 @@ while true ; do
     -l|--list-services)
         list_services
          shift
+          ;;
+    -c|--check-service)
+          SUB_PROJECT_NAME="$2";
+          shift 2
+          if [[ -z $SUB_PROJECT_NAME ]] ; then
+            echo "$(basename $0): missing SUB_PROJECT_NAME"
+            usage
+            exit 1
+          fi
+          check_service $SUB_PROJECT_NAME
           ;;
     -c|--create-service)
          SUB_PROJECT_NAME="$2";

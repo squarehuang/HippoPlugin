@@ -34,6 +34,28 @@ function sed_command (){
     fi
 }
 
+function stat_permission (){
+    # stat command is different in Linux and MacOS, so we need this function
+    os=$(uname -s)
+    if [ $os == "Linux" ]; then
+        stat -c %a $1
+    elif [ $os == "Darwin" ]; then
+        stat -f %Lp $1
+    fi
+}
+
+function install_plugin_func (){
+  project_path=$1
+  # TODO check permission
+  # clone hippo folder to target project
+  rsync -avz --exclude 'build.sh' "${HIPPO_DIR}" ${project_path}/
+  chmod -R 755 ${project_path}/hippo
+  retval=$?
+  if [[ retval == 0 ]] ; then
+    log_info "Hippo Plugin successfully installed on ${project_path}"
+  fi
+}
+
 function create_service_func (){
     subproject_name=$1
     ENV_PATH="${HIPPO_CONF_DIR}/env.sh"
@@ -103,6 +125,17 @@ function list_services_func() {
       SUB_PROJECT_NAME=$(echo ${element} | sed -e "s/${PROJECT_NAME}-//g" )
       printf '%-40s %-40s %-40s \n' ${PROJECT_NAME} ${SUB_PROJECT_NAME} ${element}
     done
+}
+
+function check_service_func() {
+    subproject_name=$1
+    service_name="${PROJECT_NAME}-${subproject_name}"
+    if [[ $SERVICE_LIST =~ $service_name ]]; then
+      exit 0
+    else
+      log_warn "a Sub-project name \"${subproject_name}\" not exists"
+      exit 1
+    fi
 
 
 }
