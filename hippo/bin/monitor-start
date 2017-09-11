@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 
-export APP_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
+export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
 
 # project folder name , e.g. hippos.service.test1
-PROJECT_NAME="$(basename ${APP_HOME})"
+PROJECT_NAME="$(basename ${PROJECT_HOME})"
 MONITOR_PREFIX="Monitor-"
-HIPPO_DIR=${APP_HOME}/hippo
+HIPPO_DIR=${PROJECT_HOME}/hippo
 HIPPO_BIN_DIR=${HIPPO_DIR}/bin
 HIPPO_SBIN_DIR=${HIPPO_DIR}/sbin
 HIPPO_CONF_DIR=${HIPPO_DIR}/etc
@@ -28,7 +28,7 @@ done < ${HIPPO_CONF_DIR}/env.sh
 
 function usage ()
 {
-    temp_serivce_name="$(basename ${APP_HOME})"
+    temp_serivce_name="$(basename ${PROJECT_HOME})"
     echo "[monitor-start]
     Usage: `basename $0` [OPTIONS] SERVICE
     e.g. `basename $0` -i 60 "$temp_serivce_name"
@@ -85,9 +85,6 @@ if [[ -z $SERVICE_NAME ]] ; then
   exit 1
 fi
 
-# parse SUB_PROJECT_NAME
-SUB_PROJECT_NAME=$(echo ${SERVICE_NAME} | sed -e "s/${PROJECT_NAME}-//g" )
-
 
 MONITOR="${MONITOR_PREFIX}${SERVICE_NAME}"
 
@@ -102,7 +99,7 @@ if [[ -z $IS_RESTART ]] ; then
 fi
 
 function start() {
-  service_retout=$(${HIPPO_BIN_DIR}/${SUB_PROJECT_NAME}/run-${PROJECT_NAME}-${SUB_PROJECT_NAME}.sh --start)
+  service_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --start)
   service_retcode=$?
   cmd="sh ${HIPPO_SBIN_DIR}/monitor.sh -i $INTERVAL $SERVICE_NAME"
   monitor_retout=$(${HIPPO_SBIN_DIR}/daemon.sh $MONITOR start 1 $cmd)

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-export APP_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
+export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
 
 MONITOR_PREFIX="Monitor-"
-HIPPO_DIR=${APP_HOME}/hippo
+HIPPO_DIR=${PROJECT_HOME}/hippo
 HIPPO_BIN_DIR=${HIPPO_DIR}/bin
 HIPPO_SBIN_DIR=${HIPPO_DIR}/sbin
 HIPPO_CONF_DIR=${HIPPO_DIR}/etc
@@ -25,7 +25,7 @@ done < ${HIPPO_CONF_DIR}/env.sh
 
 function usage ()
 {
-    temp_serivce_name="$(basename ${APP_HOME})"
+    temp_serivce_name="$(basename ${PROJECT_HOME})"
     echo "[monirot-stop]
     Usage: `basename $0` SERVICE
     e.g. `basename $0` "$temp_serivce_name"

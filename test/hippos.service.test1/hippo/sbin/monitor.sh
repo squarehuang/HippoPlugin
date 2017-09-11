@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-export APP_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
+export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
 
-PROJECT_NAME="$(basename ${APP_HOME})"
-HIPPO_DIR=${APP_HOME}/hippo
+PROJECT_NAME="$(basename ${PROJECT_HOME})"
+HIPPO_DIR=${PROJECT_HOME}/hippo
 HIPPO_BIN_DIR=${HIPPO_DIR}/bin
 HIPPO_CONF_DIR=${HIPPO_DIR}/etc
 
@@ -12,7 +12,7 @@ HIPPO_CONF_DIR=${HIPPO_DIR}/etc
 function usage ()
 {
     echo "[monitor]
-    Usage: `basename $0` -t <interval>
+    Usage: `basename $0` -t <interval> SERVICE_NAME
     OPTIONS:
        -h|--help                  Show this message
        -i|--interval <interval>   Monitor interval seconds, (default: 5)
@@ -71,11 +71,11 @@ while [[ True ]]; do
   sleep $INTERVAL
   error_msg=''
   # start monitor
-  status_retout=$(${HIPPO_BIN_DIR}/${SUB_PROJECT_NAME}/run-${PROJECT_NAME}-${SUB_PROJECT_NAME}.sh --status)
+  status_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --status)
   status_retcode=$?
   if [[ $status_retcode -eq 1 ]]; then
    log_warn "restart service..."
-   restart_retout=$(${HIPPO_BIN_DIR}/${SUB_PROJECT_NAME}/run-${PROJECT_NAME}-${SUB_PROJECT_NAME}.sh --restart)
+   restart_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --restart)
    restart_retcode=$?
    log_warn "restart_retout : $restart_retout"
    log_warn "restart_retcode : $restart_retcode"
@@ -98,7 +98,7 @@ while [[ True ]]; do
 
   # send message to kafka
   own_pid=$$
-  path=$APP_HOME
+  path=$PROJECT_HOME
   exec_time=`date +%s`
 
   message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":\"$own_pid\",\"service_pid\":\"$service_pid\",\"exec_time\":\"$exec_time\",\"is_success\":\"$is_success\",\"error_msg\":\"$error_msg\"}"
