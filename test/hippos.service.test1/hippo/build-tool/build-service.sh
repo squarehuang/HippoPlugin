@@ -23,7 +23,7 @@ function check_service(){
 
 function usage ()
 {
-    echo "[build-service]
+    echo "[build-service] SUB_PROJECT_NAME
     Usage: `basename $0`
     e.g. `basename $0`
     OPTIONS:
@@ -31,7 +31,7 @@ function usage ()
        -c|--create-service=SUB_PROJECT_NAME  Create a service
        -d|--delete-service=SUB_PROJECT_NAME  Delete a service
        -l|--list-services                    List services
-       --check-service <SUB_PROJECT_NAME>    Check service existed by SUB_PROJECT_NAME
+       --check-service=SUB_PROJECT_NAME    Check service existed by SUB_PROJECT_NAME
     "
 }
 args=`getopt -o hlc:d: --long create-service:,delete-service:,check-service:,list-services,help \

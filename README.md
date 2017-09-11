@@ -20,13 +20,16 @@ echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
 
 ## Installation
 
-### 於開發專案內加入 hippo plugin
+### 專案安裝 hippo plugin
 
-於 `hippo/build-tool` 資料夾執行 `build.sh`
+於 `HippoPlugin/hippo/build-tool` 資料夾執行 `build.sh`
 
 ```shell=
 ./build.sh --install $your-project-root
 ```
+
+查看 project path 目錄下會多一個 `hippo` 的資料夾
+
 
 ### 填寫 Kafka 相關資訊
 
@@ -48,10 +51,20 @@ HEALTH_TOPIC=service-health
 
 ### 新增一個 service
 
-於 `hippo/build-tool`執行 `build.sh`
+**於 HippoPlugin hippo/build-tool**
+
+於 `HippoPlugin/hippo/build-tool`執行 `build.sh`
 
 ```shell=
 ./build.sh --create-service evaluation $your-project-root
+```
+
+**於 Project 內的 hippo/build-tool**
+
+於 `$Project/hippo/build-tool`執行 `build-service.sh`
+
+```shell=
+./build-service.sh --create-service $SUB_PROJECT_NAME
 ```
 
 ### 設定執行 service 的 command
@@ -74,7 +87,7 @@ build-tool/build-service.sh
 #### Usage
 
 ```shell
-build-service.sh [OPTIONS] SERVICE
+build-service.sh [OPTIONS] SUB_PROJECT_NAME
 ```
 
 #### Options
@@ -82,9 +95,11 @@ build-service.sh [OPTIONS] SERVICE
 | short | command                   | description                                                                                                                                                                                                        | Default | Required |
 | :---- | :------------------------ | :--------------------------------------------------------------------------------------------------------------- | :----- | :-----                                                                                                |
 | -h    | --help                    | Show help, exit                                                                                                                                                                                                    |        |        |
-| -c    | --create-service  <SUB_PROJECT_NAME>        | 新增一個 service        |        |TRUE   |
-| -d    | --delete-service   <SUB_PROJECT_NAME>       | 刪除一個 Service        |        |FALSE   |
-| -l    | --list-services                             | 列出 Project 內的 Service        |        |FALSE   |
+| -c    | --create-service=SUB_PROJECT_NAME       | 新增一個 service        |        |FALSE   |
+| -d    | --delete-service=SUB_PROJECT_NAME       | 刪除一個 Service        |        |FALSE   |
+| -l    | --list-services                         | 列出 Project 內的 Service        |        |FALSE   |
+| --check-service=SUB_PROJECT_NAME                | 確認 Project 內是否有該 Service        |        |FALSE   |
+
 
 #### Example
 
