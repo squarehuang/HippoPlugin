@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-export APP_HOME="$(cd "`dirname "$0"`"/../../..; pwd)"
+export PROJECT_HOME="$(cd "`dirname "$0"`"/../../..; pwd)"
 
 # project folder name , e.g. hippos.service.test1
 PROJECT_NAME="$(basename ${APP_HOME})"
-# auto generate subproject name
-SUB_PROJECT_NAME="training"
+# auto generate service name
+SERVICE_NAME="training"
 HIPPO_DIR=${APP_HOME}/hippo
 HIPPO_BIN_DIR=${HIPPO_DIR}/bin
 HIPPO_SBIN_DIR=${HIPPO_DIR}/sbin
@@ -15,7 +15,7 @@ HIPPO_LOG_DIR=${HIPPO_DIR}/var/logs
 
 . "${HIPPO_CONF_DIR}/env.sh"
 . "${HIPPO_BIN_DIR}/runtime-env-info.sh"
-. "${HIPPO_CONF_DIR}/${SUB_PROJECT_NAME}/${PROJECT_NAME}-${SUB_PROJECT_NAME}-env.sh"
+. "${HIPPO_CONF_DIR}/${SERVICE_NAME}/${SERVICE_NAME}-env.sh"
 
 while read assignment; do
   if [[ $assignment != *"#"* ]] ; then
@@ -27,25 +27,25 @@ done < ${HIPPO_CONF_DIR}/env.sh
 
 function start() {
   cmd=$EXECUTE_CMD
-  sh ${HIPPO_SBIN_DIR}/daemon.sh ${PROJECT_NAME}-${SUB_PROJECT_NAME} start 1 $cmd
+  sh ${HIPPO_SBIN_DIR}/daemon.sh ${SERVICE_NAME} start 1 $cmd
 }
 
 function stop() {
-  sh ${HIPPO_SBIN_DIR}/daemon.sh ${PROJECT_NAME}-${SUB_PROJECT_NAME} stop 1
+  sh ${HIPPO_SBIN_DIR}/daemon.sh ${SERVICE_NAME} stop 1
 }
 
 function status() {
-  sh ${HIPPO_SBIN_DIR}/daemon.sh ${PROJECT_NAME}-${SUB_PROJECT_NAME} status 1
+  sh ${HIPPO_SBIN_DIR}/daemon.sh ${SERVICE_NAME} status 1
 }
 
 function restart() {
-  stop ${PROJECT_NAME}-${SUB_PROJECT_NAME}
-  start ${PROJECT_NAME}-${SUB_PROJECT_NAME}
+  stop ${SERVICE_NAME}
+  start ${SERVICE_NAME}
 }
 
 function usage ()
 {
-    echo "[${PROJECT_NAME}-${SUB_PROJECT_NAME}]
+    echo "[${SERVICE_NAME}]
     Usage: `basename $0` {arg}
     e.g. `basename $0` --start
     --start

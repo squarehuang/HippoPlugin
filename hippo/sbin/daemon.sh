@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-if [ -z "${APP_HOME}" ]; then
-  export APP_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
+if [ -z "${PROJECT_HOME}" ]; then
+  export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
 fi
 
 
 if [ -z "$HIPPO_DIR" ]; then
-  export HIPPO_DIR="${APP_HOME}/hippo"
+  export HIPPO_DIR="${PROJECT_HOME}/hippo"
 fi
 
 if [ -z "$HIPPO_LOG_DIR" ]; then
