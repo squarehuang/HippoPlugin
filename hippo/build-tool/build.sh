@@ -1,8 +1,8 @@
 # #!/usr/bin/env bash
-export APP_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
-export PROJECT_NAME="$(basename ${APP_HOME})"
+export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
+export PROJECT_NAME="$(basename ${PROJECT_HOME})"
 
-HIPPO_DIR=${APP_HOME}/hippo
+HIPPO_DIR=${PROJECT_HOME}/hippo
 
 . "${HIPPO_DIR}"/build-tool/build-utils.sh
 
@@ -15,14 +15,17 @@ function usage ()
     OPTIONS:
        -h|--help                             Show this message
        -i|--install                          Install Hippo Plugin to PROJECT_PATH
+       -u|--uninstall                        Uninstall Hippo Plugin from PROJECT_PATH
        --check-install                       Check Plugin install on PROJECT_PATH
-       -c|--create-service=SUB_PROJECT_NAME  Create a service by SUB_PROJECT_NAME
-       -d|--delete-service=SUB_PROJECT_NAME  Delete a service by SUB_PROJECT_NAME
+       -c|--create-service=SERVICE           Create a service
+       -d|--delete-service=SERVICE           Delete a service
        -l|--list-services                    List services
-       --check-service=SUB_PROJECT_NAME      Check service existed by SUB_PROJECT_NAME
+       --check-service=SERVICE               Check service existed by SERVICE
+       --cmd=\"CMD\"                         Command to run to service (py, jar, sh...) , you can use \"\\\${PROJECT_HOME}\" variable (${PROJECT_HOME}) to build command
+
     "
 }
-args=`getopt -o ilhc:d: --long create-service:,delete-service:,check-service:,list-services,install,check-install,help \
+args=`getopt -o ilhuc:d: --long create-service:,delete-service:,check-service:,cmd:,list-services,install,uninstall,check-install,help \
      -n 'build' -- "$@"`
 
 if [ $? != 0 ] ; then
@@ -39,26 +42,30 @@ while true ; do
          IS_INSTALL="true"
          shift
           ;;
+    -u|--uninstall)
+         IS_UNINSTALL="true"
+         shift
+          ;;
     -l|--list-services)
          IS_LIST_SERVICES="true"
          shift
           ;;
     -c|--create-service)
          IS_CREATE_SERVICE="true"
-         SUB_PROJECT_NAME="$2";
+         SERVICE_NAME="$2";
          shift 2
-         if [[ -z $SUB_PROJECT_NAME ]] ; then
-           echo "$(basename $0): missing SUB_PROJECT_NAME"
+         if [[ -z $SERVICE_NAME ]] ; then
+           echo "$(basename $0): missing SERVICE_NAME"
            usage
            exit 1
          fi
          ;;
     -d|--delete-service)
         IS_DELETE_SERVICE="true"
-        SUB_PROJECT_NAME="$2";
+        SERVICE_NAME="$2";
         shift 2
-        if [[ -z $SUB_PROJECT_NAME ]] ; then
-          echo "$(basename $0): missing SUB_PROJECT_NAME"
+        if [[ -z $SERVICE_NAME ]] ; then
+          echo "$(basename $0): missing SERVICE_NAME"
           usage
           exit 1
         fi
@@ -73,13 +80,17 @@ while true ; do
         ;;
     --check-service )
         IS_CHECK_SERVICE="true"
-        SUB_PROJECT_NAME="$2";
+        SERVICE_NAME="$2";
         shift 2
-        if [[ -z $SUB_PROJECT_NAME ]] ; then
-          echo "$(basename $0): missing SUB_PROJECT_NAME"
+        if [[ -z $SERVICE_NAME ]] ; then
+          echo "$(basename $0): missing SERVICE_NAME"
           usage
           exit 1
         fi
+        ;;
+    --cmd)
+        CMD=$2;
+        shift 2
         ;;
     --)
         shift ;
@@ -123,19 +134,29 @@ function check_service(){
       exit "$RETVAL"
     fi
 
-    $PROJECT_PATH/hippo/build-tool/build-service.sh --check-service $SUB_PROJECT_NAME
+    $PROJECT_PATH/hippo/build-tool/build-service.sh --check-service $SERVICE_NAME
 
 }
 
 function install(){
-    log_info " Install Plugin"
     check_installed
     retval_is_install=$?
     if [[ $retval_is_install == 0 ]] ; then
       exit
     fi
-
+    log_info " Install Plugin on $PROJECT_PATH"
     install_plugin_func $PROJECT_PATH
+}
+
+function uninstall(){
+    check_installed
+    retval_is_install=$?
+    if [[ $retval_is_install == 0 ]] ; then
+      log_info " Uninstall Plugin on $PROJECT_PATH"
+      uninstall_plugin_func $PROJECT_PATH
+    fi
+
+
 }
 
 function create_service(){
@@ -145,8 +166,11 @@ function create_service(){
       install
     fi
 
-    subproject_name=$1
-    $PROJECT_PATH/hippo/build-tool/build-service.sh --create-service $SUB_PROJECT_NAME
+    if [[ -n $CMD ]] ; then
+      $PROJECT_PATH/hippo/build-tool/build-service.sh --create-service $SERVICE_NAME --cmd "$CMD"
+    else
+      $PROJECT_PATH/hippo/build-tool/build-service.sh --create-service $SERVICE_NAME
+    fi
 }
 function delete_service(){
   check_installed
@@ -154,7 +178,7 @@ function delete_service(){
   if [[ $retval_is_install == 1 ]] ; then
     install
   fi
-  $PROJECT_PATH/hippo/build-tool/build-service.sh --create-service $SUB_PROJECT_NAME
+  $PROJECT_PATH/hippo/build-tool/build-service.sh --delete-service $SERVICE_NAME
 }
 function list_services(){
   # log_info "list services"
@@ -188,6 +212,11 @@ fi
 
 if [[ -n $IS_INSTALL ]]; then
   install
+  exit $RETVAL
+fi
+
+if [[ -n $IS_UNINSTALL ]]; then
+  uninstall
   exit $RETVAL
 fi
 

@@ -32,7 +32,7 @@ function usage ()
        -d|--delete-service=SERVICE  Delete a service
        -l|--list-services           List services
        --check-service=SERVICE      Check service existed by SERVICE
-       --cmd=\"CMD\"                  Command to run to service (py, jar, sh...) , you can use \"\\\${PROJECT_HOME}\" variable (${PROJECT_HOME}) to build command
+       --cmd=\"CMD\"                Command to run to service (py, jar, sh...) , you can use \"\\\${PROJECT_HOME}\" variable (${PROJECT_HOME}) to build command
     "
 }
 args=`getopt -o hlc:d: --long create-service:,delete-service:,check-service:,cmd:,list-services,help \
