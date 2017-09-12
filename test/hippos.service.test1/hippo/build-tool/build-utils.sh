@@ -50,9 +50,18 @@ function install_plugin_func (){
   # clone hippo folder to target project
   rsync -avz --exclude 'build.sh' "${HIPPO_DIR}" ${project_path}/
   chmod -R 755 ${project_path}/hippo
-  retval=$?
-  if [[ retval == 0 ]] ; then
-    log_info "Hippo Plugin successfully installed on ${project_path}"
+  if [[ -d ${project_path}/hippo ]] ; then
+    log_info " Hippo Plugin successfully installed on ${project_path}"
+  fi
+}
+
+function uninstall_plugin_func (){
+  project_path=$1
+  if [[ -d ${project_path}/hippo ]] ; then
+    rm -r ${project_path}/hippo
+    if [[ ! -d ${project_path}/hippo ]] ; then
+      log_info " Hippo Plugin was successfully uninstalled from ${project_path}"
+    fi
   fi
 }
 
@@ -100,7 +109,7 @@ function create_service_func (){
     chmod 755 "${HIPPO_CONF_DIR}/${service_name}/${service_name}-env.sh"
 
     if [[ -n $cmd ]] ; then
-      log_info "[BUILD] Edit EXECUTE_CMD"
+      log_info "[BUILD] add EXECUTE_CMD=\"${cmd}\" to ${HIPPO_CONF_DIR}/${service_name}/${service_name}-env.sh"
       sed_command "/^EXECUTE_CMD/d" "${HIPPO_CONF_DIR}/${service_name}/${service_name}-env.sh"
       echo "EXECUTE_CMD=\"${cmd}\"" >> "${HIPPO_CONF_DIR}/${service_name}/${service_name}-env.sh"
       # sed_command "s/^EXECUTE_CMD=.*/EXECUTE_CMD='${cmd}'/g"

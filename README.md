@@ -72,8 +72,8 @@ HEALTH_TOPIC=service-health
 於 `hippo/etc/training/hippos.service.test1-training-env.sh` 編輯 `EXECUTE_CMD`
 
 ```shell
-# You can use APP_HOME variable to build command
-EXECUTE_CMD="sh ${APP_HOME}/sbin/mock_training.sh"
+# You can use PROJECT_HOME variable to build command
+EXECUTE_CMD="sh ${PROJECT_HOME}/sbin/mock_training.sh"
 ```
 
 

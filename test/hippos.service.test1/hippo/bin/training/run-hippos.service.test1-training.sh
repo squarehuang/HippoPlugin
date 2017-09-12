@@ -3,10 +3,10 @@
 export PROJECT_HOME="$(cd "`dirname "$0"`"/../../..; pwd)"
 
 # project folder name , e.g. hippos.service.test1
-PROJECT_NAME="$(basename ${APP_HOME})"
+PROJECT_NAME="$(basename ${PROJECT_HOME})"
 # auto generate service name
 SERVICE_NAME="training"
-HIPPO_DIR=${APP_HOME}/hippo
+HIPPO_DIR=${PROJECT_HOME}/hippo
 HIPPO_BIN_DIR=${HIPPO_DIR}/bin
 HIPPO_SBIN_DIR=${HIPPO_DIR}/sbin
 HIPPO_CONF_DIR=${HIPPO_DIR}/etc
