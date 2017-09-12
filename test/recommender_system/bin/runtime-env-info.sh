@@ -11,4 +11,4 @@
 # language version, like Python, JDK, R, Scala
 
 #export PYTHONPATH=:/home/users/ddt81349/hippo_v1/app/hippos/lib/pyhippo:${PROJECT_HOME}:$PYTHONPATH
-#source /Users/square_huang/ENV/bin/activate
+source /Users/square_huang/ENV/bin/activate
