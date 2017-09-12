@@ -2,10 +2,10 @@
 
 export PROJECT_HOME="$(cd "`dirname "$0"`"/../../..; pwd)"
 
-# project folder name 
+# project folder name
 PROJECT_NAME="$(basename ${PROJECT_HOME})"
 # auto generate service name
-SERVICE_NAME=
+SERVICE_NAME="recommender-prediction"
 HIPPO_DIR=${PROJECT_HOME}/hippo
 HIPPO_BIN_DIR=${HIPPO_DIR}/bin
 HIPPO_SBIN_DIR=${HIPPO_DIR}/sbin

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PROJECT_NAME="hippos.service.test1"
+PROJECT_NAME="recommender_system"
 
 export PROJECT_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 

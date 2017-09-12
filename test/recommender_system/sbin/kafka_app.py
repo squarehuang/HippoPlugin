@@ -11,7 +11,7 @@ from threading import Thread
 from kafka import KafkaConsumer, KafkaProducer
 import configparser
 
-CONFIG = '/Users/square_huang/Dropbox/Square/Study/Code/hippos/services/hippos.service.test1/etc/dev.conf'
+CONFIG = '/Users/square_huang/Dropbox/Square/Study/Code/hippos/services/recommender_system/etc/dev.conf'
 config = configparser.ConfigParser()
 config.read(CONFIG)
 START_TOPIC = config['kafka']['START_TOPIC']
