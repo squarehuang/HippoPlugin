@@ -27,6 +27,8 @@
 *.log.*
 */logs
 */var/run
+*/*/*/*/run/*
+*/*/*/*/logs/*
 # OS generated files #
 ######################
 .DS_Store*
