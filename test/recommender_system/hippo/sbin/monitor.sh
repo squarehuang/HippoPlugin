@@ -57,8 +57,6 @@ if [[ -z $SERVICE_NAME ]] ; then
   exit 1
 fi
 
-# parse SUB_PROJECT_NAME
-SUB_PROJECT_NAME=$(echo ${SERVICE_NAME} | sed -e "s/${PROJECT_NAME}-//g" )
 
 if [[ -z $INTERVAL ]] ; then
   INTERVAL=5
@@ -100,8 +98,8 @@ while [[ True ]]; do
   own_pid=$$
   path=$PROJECT_HOME
   exec_time=`date +%s`
-
-  message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":\"$own_pid\",\"service_pid\":\"$service_pid\",\"exec_time\":\"$exec_time\",\"is_success\":\"$is_success\",\"error_msg\":\"$error_msg\"}"
+  exec_timems=$((exec_time*1000+`date "+%N"`/1000000))
+  message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":\"$own_pid\",\"service_pid\":\"$service_pid\",\"exec_time\":\"$exec_timems\",\"is_success\":\"$is_success\",\"error_msg\":\"$error_msg\"}"
   producer_cmd="$KAFKA_PRODUCER --broker-list ${KAFKA_HOST} --topic ${HEALTH_TOPIC}"
   #echo ${message} "|" ${producer_cmd}
 
