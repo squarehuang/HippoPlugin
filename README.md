@@ -93,6 +93,7 @@ EXECUTE_CMD="sh ${PROJECT_HOME}/sbin/mock_training.sh"
 | -h    | --help                    | Show help                       |        |        |
 | -i    | --install                 | 安裝 hippo plugin 到專案         |        |FALSE   |
 | -u    | --uninstall               | 移除專案的 hippo plugin          |        |FALSE   |
+|       | --check-install           | 確認 Project 內是否有安裝 hippo plugin |   |FALSE   |
 
 
 
