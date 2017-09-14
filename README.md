@@ -64,14 +64,6 @@ HEALTH_TOPIC=service-health
 ./build-service.sh --create-service $SERVICE --cmd "sh \${PROJECT_HOME}/sbin/mock_training.sh"
 ```
 
-**於 HippoPlugin hippo/build-tool**
-
-於 `HippoPlugin/hippo/build-tool`執行 `build.sh`
-
-```shell=
-./build.sh --create-service evaluation $your-project-root
-```
-
 
 ### 設定執行 service 的 command
 
@@ -91,7 +83,7 @@ EXECUTE_CMD="sh ${PROJECT_HOME}/sbin/mock_training.sh"
 #### Usage
 
 ```shell
-./build-tool/build-service.sh [OPTIONS] PROJECT_PATH
+./build-tool/build.sh [OPTIONS] PROJECT_PATH
 ```
 
 #### Options
@@ -101,11 +93,7 @@ EXECUTE_CMD="sh ${PROJECT_HOME}/sbin/mock_training.sh"
 | -h    | --help                    | Show help                       |        |        |
 | -i    | --install                 | 安裝 hippo plugin 到專案         |        |FALSE   |
 | -u    | --uninstall               | 移除專案的 hippo plugin          |        |FALSE   |
-| -c    | --create-service=SERVICE  | 新增一個 Service                 |        |FALSE   |
-| -d    | --delete-service=SERVICE  | 刪除一個 Service                 |        |FALSE   |
-| -l    | --list-services           | 列出 Project 內的 Service        |        |FALSE   |
-|       |--check-service=SERVICE    | 確認 Project 內是否有該 Service   |        |FALSE   |
-|       |--cmd=\"CMD\"              | 啟動 Service 時帶入的指令(執行 py、jar、shell)，可以使用  "\${PROJECT_HOME}" 變數 |  | FALSE |
+
 
 
 > `--cmd` 需與 `--create-service` 一起使用
@@ -154,7 +142,7 @@ build-tool/build-service.sh
 | -d    | --delete-service=SERVICE  | 刪除一個 Service                 |        |FALSE   |
 | -l    | --list-services           | 列出 Project 內的 Service        |        |FALSE   |
 |       |--check-service=SERVICE    | 確認 Project 內是否有該 Service   |        |FALSE   |
-|       |--cmd=\"CMD\"              | 啟動 Service 時帶入的指令(執行 py、jar、shell)，可以使用  "\${PROJECT_HOME}" 變數 |  | FALSE |
+|       |--cmd=\"CMD\"              | 啟動 Service 時帶入的指令(執行 py、jar、shell)，可以使用  "\\${PROJECT_HOME}" 變數 |  | FALSE |
 
 > `--cmd` 需與 `--create-service` 一起使用
 
