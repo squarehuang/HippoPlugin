@@ -12,15 +12,15 @@ function log_error (){
     echo
     exit 1
 }
-if [ -z "${PROJECT_HOME}" ]; then
-  export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
-fi
+# if [ -z "${PROJECT_HOME}" ]; then
+#   export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
+# fi
 
-PROJECT_NAME="$(basename ${PROJECT_HOME})"
-HIPPO_DIR=${PROJECT_HOME}/hippo
-HIPPO_BIN_DIR=${HIPPO_DIR}/bin
-HIPPO_CONF_DIR=${HIPPO_DIR}/etc
-. "${HIPPO_CONF_DIR}/env.sh"
+# PROJECT_NAME="$(basename ${PROJECT_HOME})"
+# HIPPO_DIR=${PROJECT_HOME}/hippo
+# HIPPO_BIN_DIR=${HIPPO_DIR}/bin
+# HIPPO_CONF_DIR=${HIPPO_DIR}/etc
+# . "${HIPPO_CONF_DIR}/env.sh"
 
 
 
@@ -70,7 +70,7 @@ function create_service_func (){
     shift
     cmd=$1
     ENV_PATH="${HIPPO_CONF_DIR}/env.sh"
-    ## read subproject name and generate service_name
+    ## read service_name
     if [[ $SERVICE_LIST =~ $service_name ]]; then
       log_warn "a Service name \"${service_name}\" is already existed, please type another one"
       exit 1
@@ -119,12 +119,11 @@ function create_service_func (){
 function delete_service_func() {
     service_name=$1
     ENV_PATH="${HIPPO_CONF_DIR}/env.sh"
-    # service_name="${PROJECT_NAME}-${subproject_name}"
     if [[ ! -d ${HIPPO_BIN_DIR}/${service_name} ]] && [[ ! -d ${HIPPO_CONF_DIR}/${service_name} ]]; then
         log_warn "Service name \"${service_name}\" is not existed"
         yn=""
     else
-      # delete sub-project folder and modify env.sh
+      # delete service_name folder and modify env.sh
       if [ -d "${HIPPO_BIN_DIR}/${service_name}" ]; then rm -r "${HIPPO_BIN_DIR}/${service_name}"; fi
       if [ -d "${HIPPO_CONF_DIR}/${service_name}" ]; then rm -r "${HIPPO_CONF_DIR}/${service_name}"; fi
 
@@ -144,7 +143,6 @@ function list_services_func() {
 
 function check_service_func() {
     service_name=$1
-    # service_name="${PROJECT_NAME}-${subproject_name}"
     if [[ $SERVICE_LIST =~ $service_name ]]; then
       exit 0
     else

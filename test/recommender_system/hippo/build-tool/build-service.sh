@@ -2,8 +2,11 @@
 export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
 export PROJECT_NAME="$(basename ${PROJECT_HOME})"
 
-HIPPO_DIR=${PROJECT_HOME}/hippo
+export HIPPO_DIR=${PROJECT_HOME}/hippo
+export HIPPO_BIN_DIR=${HIPPO_DIR}/bin
+export HIPPO_CONF_DIR=${HIPPO_DIR}/etc
 
+. "${HIPPO_CONF_DIR}/env.sh"
 . "${HIPPO_DIR}"/build-tool/build-utils.sh
 
 function create_service(){
