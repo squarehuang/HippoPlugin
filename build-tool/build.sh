@@ -1,17 +1,16 @@
-# #!/usr/bin/env bash
-export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
-export PROJECT_NAME="$(basename ${PROJECT_HOME})"
+# !/usr/bin/env bash
+export HIPPO_HOME="$(cd "`dirname "$0"`"/..; pwd)"
+export HIPPO_BIN_DIR=${HIPPO_HOME}/bin
+export HIPPO_CONF_DIR=${HIPPO_HOME}/etc
 
-HIPPO_DIR=${PROJECT_HOME}/hippo
+. "${HIPPO_HOME}"/build-tool/build-utils.sh
 
-. "${HIPPO_DIR}"/build-tool/build-utils.sh
-
-
+example_path="$(cd "`dirname "$HIPPO_HOME"`"/..; pwd)"/test_project
 function usage ()
 {
     echo "[build-service]
-    Usage: `basename $0` [OPTIONS] PROJECT_PATH
-    e.g. `basename $0` --install /apps/hippo_service_test1
+    Usage: `basename $0` [OPTIONS] PROJECT_HOME
+    e.g. `basename $0` --install $example_path
     OPTIONS:
        -h|--help                             Show this message
        -i|--install                          Install Hippo Plugin to PROJECT_PATH
@@ -21,11 +20,13 @@ function usage ()
        -d|--delete-service=SERVICE           Delete a service
        -l|--list-services                    List services
        --check-service=SERVICE               Check service existed by SERVICE
-       --cmd=\"CMD\"                         Command to run to service (py, jar, sh...) , you can use \"\\\${PROJECT_HOME}\" variable (${PROJECT_HOME}) to build command
-
+       --cmd=\"CMD\"                           Command to run to service (py, jar, sh...) , you can use \"{PROJECT_HOME}\" variable (e.g. $example_path) to build command
+       --build-account                       Build Account
+       --build-server                        Build Server
+       
     "
 }
-args=`getopt -o ilhuc:d: --long create-service:,delete-service:,check-service:,cmd:,list-services,install,uninstall,check-install,help \
+args=`getopt -o ilhuc:d: --long create-service:,delete-service:,check-service:,cmd:,build-account:,build-server:,list-services,install,uninstall,check-install,help \
      -n 'build' -- "$@"`
 
 if [ $? != 0 ] ; then
@@ -91,6 +92,18 @@ while true ; do
     --cmd)
         CMD=$2;
         shift 2
+        if [[ $CMD =~ '{PROJECT_HOME}' ]] ; then
+          CMD="\\\$${CMD}"
+          echo "CMD "$CMD
+        fi
+        ;;
+    --build-account)
+        export BUILD_ACCOUNT=$2;
+        shift 2
+        ;;
+     --build-server)
+        export BUILD_SERVER=$2;
+        shift 2
         ;;
     --)
         shift ;
@@ -105,24 +118,21 @@ done
 
 
 for arg do
-   PROJECT_PATH=$arg
+    PROJECT_HOME=$arg
 done
+
 # check for required args
-if [[ -z $PROJECT_PATH ]] ; then
-  echo "$(basename $0): missing PROJECT_PATH"
+if [[ -z $PROJECT_HOME ]] ; then
+  echo "$(basename $0): missing PROJECT_HOME"
   usage
   exit 1
 fi
 
-function check_installed(){
-    if [[ ! -d $PROJECT_PATH/hippo ]] ; then
-      log_info " Hippo Plugin not exists on $PROJECT_PATH"
-      RETVAL=1
-    else
-      log_info " Hippo Plugin already installed on $PROJECT_PATH"
-      RETVAL=0
-    fi
+export PROJECT_NAME="$(basename ${PROJECT_HOME})"
 
+function check_installed(){
+    check_exists_plugin_func
+    RETVAL=$?
     return "$RETVAL"
 }
 
@@ -134,8 +144,7 @@ function check_service(){
       exit "$RETVAL"
     fi
 
-    $PROJECT_PATH/hippo/build-tool/build-service.sh --check-service $SERVICE_NAME
-
+  check_service_func $SERVICE_NAME
 }
 
 function install(){
@@ -144,16 +153,16 @@ function install(){
     if [[ $retval_is_install == 0 ]] ; then
       exit
     fi
-    log_info " Install Plugin on $PROJECT_PATH"
-    install_plugin_func $PROJECT_PATH
+    log_info " Install Plugin on $PROJECT_HOME"
+    install_plugin_func $PROJECT_HOME
 }
 
 function uninstall(){
     check_installed
     retval_is_install=$?
     if [[ $retval_is_install == 0 ]] ; then
-      log_info " Uninstall Plugin on $PROJECT_PATH"
-      uninstall_plugin_func $PROJECT_PATH
+      log_info " Uninstall Plugin on $PROJECT_HOME"
+      uninstall_plugin_func $PROJECT_HOME
     fi
 
 
@@ -167,9 +176,9 @@ function create_service(){
     fi
 
     if [[ -n $CMD ]] ; then
-      $PROJECT_PATH/hippo/build-tool/build-service.sh --create-service $SERVICE_NAME --cmd "$CMD"
+      create_service_func $SERVICE_NAME "$CMD"
     else
-      $PROJECT_PATH/hippo/build-tool/build-service.sh --create-service $SERVICE_NAME
+      create_service_func $SERVICE_NAME
     fi
 }
 function delete_service(){
@@ -178,11 +187,9 @@ function delete_service(){
   if [[ $retval_is_install == 1 ]] ; then
     install
   fi
-  $PROJECT_PATH/hippo/build-tool/build-service.sh --delete-service $SERVICE_NAME
+  delete_service_func $SERVICE_NAME
 }
 function list_services(){
-  # log_info "list services"
-  # list_services_func
   check_installed
   retval_is_install=$?
   if [[ $retval_is_install == 1 ]] ; then
@@ -190,11 +197,19 @@ function list_services(){
     exit "$RETVAL"
   fi
 
-  $PROJECT_PATH/hippo/build-tool/build-service.sh --list-services
+  list_services_func
 }
 
-# call function
+# setting default BUILD_ACCOUNT, BUILD_SERVER
+if [[ -z $BUILD_ACCOUNT ]] ; then
+    BUILD_ACCOUNT=$USER
+fi
 
+if [[ -z $BUILD_SERVER ]] ; then
+    BUILD_SERVER=$HOSTNAME
+fi
+
+# call function
 if [[ -n $IS_CHECK_INSTALL ]]; then
   check_installed
   exit $RETVAL
@@ -212,7 +227,6 @@ fi
 
 if [[ -n $IS_INSTALL ]]; then
   install
-  exit $RETVAL
 fi
 
 if [[ -n $IS_UNINSTALL ]]; then

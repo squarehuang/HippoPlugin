@@ -2,7 +2,7 @@
 
 export PROJECT_HOME="$(cd "`dirname "$0"`"/../../..; pwd)"
 
-# project folder name
+# project folder name 
 PROJECT_NAME="$(basename ${PROJECT_HOME})"
 # auto generate service name
 SERVICE_NAME="recommender-prediction"
@@ -13,9 +13,9 @@ HIPPO_CONF_DIR=${HIPPO_DIR}/etc
 HIPPO_LOG_DIR=${HIPPO_DIR}/var/logs
 
 
-. "${HIPPO_CONF_DIR}/env.sh"
+. "${HIPPO_CONF_DIR}/env.conf"
 . "${HIPPO_BIN_DIR}/runtime-env-info.sh"
-. "${HIPPO_CONF_DIR}/${SERVICE_NAME}/${SERVICE_NAME}-env.sh"
+. "${HIPPO_CONF_DIR}/${SERVICE_NAME}/${SERVICE_NAME}-env.conf"
 
 while read assignment; do
   if [[ $assignment != *"#"* ]] ; then
@@ -23,7 +23,7 @@ while read assignment; do
       export "$assignment"
     fi
   fi
-done < ${HIPPO_CONF_DIR}/env.sh
+done < ${HIPPO_CONF_DIR}/env.conf
 
 function start() {
   cmd=$EXECUTE_CMD

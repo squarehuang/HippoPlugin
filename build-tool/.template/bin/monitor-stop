@@ -9,7 +9,7 @@ HIPPO_SBIN_DIR=${HIPPO_DIR}/sbin
 HIPPO_CONF_DIR=${HIPPO_DIR}/etc
 HIPPO_LOG_DIR=${HIPPO_DIR}/var/logs
 
-. "${HIPPO_CONF_DIR}/env.sh"
+. "${HIPPO_CONF_DIR}/env.conf"
 . "${HIPPO_BIN_DIR}/runtime-env-info.sh"
 
 while read assignment; do
@@ -20,7 +20,7 @@ while read assignment; do
   fi
 
 
-done < ${HIPPO_CONF_DIR}/env.sh
+done < ${HIPPO_CONF_DIR}/env.conf
 
 
 function usage ()
