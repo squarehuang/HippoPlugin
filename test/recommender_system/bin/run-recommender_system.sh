@@ -8,7 +8,7 @@ BIN_DIR=$(dirname "$0")
 SBIN_DIR=${PROJECT_HOME}/sbin
 CONF_DIR=${PROJECT_HOME}/etc
 
-. "${CONF_DIR}/${PROJECT_NAME}-env.sh"
+. "${CONF_DIR}/${PROJECT_NAME}-env.conf"
 . "${BIN_DIR}/runtime-env-info.sh"
 
 python ${SBIN_DIR}/kafka_app.py &

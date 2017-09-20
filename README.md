@@ -6,7 +6,7 @@ Hippo Plugin 是一個結合 Hippo Manager ，讓 microservice 達到監控與�
 
 | 文件夾        |     說明      |
 | :----------- | :----------- |
-| hoppo        | hippo plugin |
+| build-tool   | plugin 與 service 的自動化安裝/移除模組                      |
 | test         | 示範程式碼，Demo 一個 microservice 與 hippo pluing 的使用方式 |
 
 ## 前置作業
@@ -18,15 +18,26 @@ brew install gnu-getopt
 echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
 ```
 
+### build-tool 的使用需先設定 server 與 server 之間 ==免密碼登入 SSH server==
+
+e.g.
+
+```
+ssh-keygen -t rsa 或 ssh-keygen -d (dsa) => 產生出 id_rsa, id_rsa.pub
+scp id_rsa.pub server_hostname:~/.ssh/
+ssh server_hostname
+cat .ssh/id_rsa.pub >> .ssh/authorized_keys 即可
+```
+
 ## Installation
 
 ### 安裝 hippo plugin 到專案
 
-於 `HippoPlugin/hippo/build-tool` 資料夾執行 `build.sh`
+於 `HippoPlugin/build-tool` 資料夾執行 `build.sh`
 
 ```shell=
-./build.sh --install $your-project-root
-./build.sh -i $your-project-root
+./build.sh --install $your-project-home
+./build.sh -i $your-project-home
 ```
 
 查看 project path 目錄下會多一個 `hippo` 的資料夾
@@ -34,7 +45,7 @@ echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
 
 ### 填寫 Kafka 相關資訊
 
-於 `Project/hippo/etc/env.sh`
+於 `Project/hippo/etc/env.conf`
 
 | name           | description        |
 | :--------------| :------------------|
@@ -54,20 +65,20 @@ HEALTH_TOPIC=service-health
 
 **於 Project 內的 hippo/build-tool**
 
-於 `$PROJECT/hippo/build-tool`執行 `build-service.sh`
+於 `HippoPlugin/build-tool` 資料夾執行 `build.sh`
 
 ```shell=
-./build-service.sh --create-service $SERVICE
+./build.sh --create-service $SERVICE $your-project-home
 ```
 
 ```shell=
-./build-service.sh --create-service $SERVICE --cmd "sh \${PROJECT_HOME}/sbin/mock_training.sh"
+./build-service.sh --create-service $SERVICE --cmd "sh {PROJECT_HOME}/sbin/mock_training.sh" $your-project-home
 ```
 
 
 ### 設定執行 service 的 command
 
-於 `$PROJECT/hippo/etc/$SERVICE/$SERVICE-env.sh` 編輯 `EXECUTE_CMD`
+於 `$PROJECT_HOME/hippo/etc/$SERVICE/$SERVICE-env.conf` 編輯 `EXECUTE_CMD`
 
 ```shell
 # You can use PROJECT_HOME variable to build command
@@ -75,15 +86,16 @@ EXECUTE_CMD="sh ${PROJECT_HOME}/sbin/mock_training.sh"
 ```
 
 
-## HOW TO USE
+## HOW TO USE Build-Tool
 
 ### build.sh
-安裝/移除專案的 hippo plugin
+安裝/移除專案的 hippo plugin   
+新增/刪除/查詢 Project 內的 Service
 
 #### Usage
 
 ```shell
-./build-tool/build.sh [OPTIONS] PROJECT_PATH
+HippoPlugin/build-tool/build.sh [OPTIONS] PROJECT_PATH
 ```
 
 #### Options
@@ -94,8 +106,11 @@ EXECUTE_CMD="sh ${PROJECT_HOME}/sbin/mock_training.sh"
 | -i    | --install                 | 安裝 hippo plugin 到專案         |        |FALSE   |
 | -u    | --uninstall               | 移除專案的 hippo plugin          |        |FALSE   |
 |       | --check-install           | 確認 Project 內是否有安裝 hippo plugin |   |FALSE   |
-
-
+| -l    | --list-services           | 列出 Project 內的 Service        |        |FALSE   |
+|       |--check-service=SERVICE    | 確認 Project 內是否有該 Service   |        |FALSE   |
+|       |--cmd=\"CMD\"              | 啟動 Service 時帶入的指令(執行 py、jar、shell)，可以使用  "{PROJECT_HOME}" 變數 |  | FALSE |
+|       | --build-account           | 遠端 server 的帳號           | HippoPlugin owner | FALSE |
+|       | --build-server            | 遠端 server 的 host or ip   | HippoPlugin server | FALSE   |
 
 > `--cmd` 需與 `--create-service` 一起使用
 
@@ -104,67 +119,42 @@ EXECUTE_CMD="sh ${PROJECT_HOME}/sbin/mock_training.sh"
 安裝 hippo plugin 到 `recommender_system` 專案
 
 ```shell=
-./HippoPlugin/hippo/build-tool/build-service.sh --install ~/recommender_system
+./HippoPlugin/build-tool/build.sh --install --build-server 88.8.146.34 ~/recommender_system  
 
 or
 
-./HippoPlugin/hippo/build-tool/build-service.sh -i ~/recommender_system
+./HippoPlugin/build-tool/build.sh -i ~/recommender_system
 
 ```
 
 移除 `recommender_system` 專案的 hippo plugin
 
 ```shell=
-./HippoPlugin/hippo/build-tool/build-service.sh --uninstall ~/recommender_system
+./HippoPlugin/build-tool/build.sh --uninstall ~/recommender_system
 
 or
 
-./HippoPlugin/hippo/build-tool/build-service.sh -u ~/recommender_system
+./HippoPlugin/build-tool/build.sh -u ~/recommender_system
 
 ```
 
-### build-service.sh
-
-新增/刪除/查詢 Project 內的 Service
-build-tool/build-service.sh
-
-#### Usage
-
-```shell
-./build-tool/build-service.sh [OPTIONS] SERVICE
-```
-
-#### Options
-
-| short | command                   | description                    | Default | Required |
-| :---- | :------------------------ | :-----------------------------| :----- | :-----    |
-| -h    | --help                    | Show help                       |        |        |
-| -c    | --create-service=SERVICE  | 新增一個 Service                 |        |FALSE   |
-| -d    | --delete-service=SERVICE  | 刪除一個 Service                 |        |FALSE   |
-| -l    | --list-services           | 列出 Project 內的 Service        |        |FALSE   |
-|       |--check-service=SERVICE    | 確認 Project 內是否有該 Service   |        |FALSE   |
-|       |--cmd=\"CMD\"              | 啟動 Service 時帶入的指令(執行 py、jar、shell)，可以使用  "\\${PROJECT_HOME}" 變數 |  | FALSE |
-
-> `--cmd` 需與 `--create-service` 一起使用
-
-#### Example
 
 新增一個 SERVICE `recommender-evaluation` 的 Service
 
 ```shell=
-./build-tool/build-service.sh --create-service recommender-evaluation
+./build-tool/build.sh --build-server localhost --create-service recommender-evaluation ~/recommender_system
 ```
 
 新增一個 SERVICE `recommender-training` 的 Service，並設定啟動時帶入的 command
 
 ```shell=
-./build-tool/build-service.sh --create-service recommender-training --cmd "\${PROJECT_HOME}/sbin/mock_training.sh"
+./build-tool/build.sh --build-server localhost --create-service recommender-training --cmd "{PROJECT_HOME}/sbin/mock_training.sh" ~/recommender_system
 ```
 
 查詢 Project 內的 Service
 
 ```shell=
-./build-tool/build-service.sh --list-services
+./build-tool/build.sh --list-services --build-server localhost ~/recommender_system
 ```
 
 Output
@@ -180,9 +170,10 @@ recommender_system                       recommender-training
 刪除一個 SERVICE `recommender-evaluation` 的 Service
 
 ```shell=
-./build-tool/build-service.sh --delete-service recommender-evaluation
+./build-tool/build.sh --build-server --delete-service recommender-evaluation ~/recommender_system
 ```
 
+## HOW TO USE Service Plugin
 ### monitor-start
 
 啟動 monitor 服務
@@ -190,7 +181,7 @@ recommender_system                       recommender-training
 #### Usage
 
 ```shell
-./bin/monitor-start [OPTIONS] SERVICE
+${PROJECT_HOME}/hippo/bin/monitor-start [OPTIONS] SERVICE
 ```
 
 
@@ -208,13 +199,13 @@ recommender_system                       recommender-training
 啟動監控間隔 60 秒的 service `recommender-training`
 
 ```shell=
-./bin/monitor-start -i 60 recommender-training
+${PROJECT_HOME}/hippo/bin/monitor-start -i 60 recommender-training
 ```
 
 重新啟動一個監控間隔 30 秒的 service `recommender-training`
 
 ```shell
-./bin/monitor-start -r -i 30 recommender-training
+${PROJECT_HOME}/hippo/bin/monitor-start -r -i 30 recommender-training
 ```
 
 ### monitor-stop
@@ -224,7 +215,7 @@ recommender_system                       recommender-training
 #### Usage
 
 ```shell
-./bin/monitor-stop SERVICE
+${PROJECT_HOME}/hippo/bin/monitor-stop SERVICE
 ```
 
 #### Example
@@ -232,7 +223,7 @@ recommender_system                       recommender-training
 暫停 service `recommender-training`
 
 ```shell
-./bin/monitor-stop recommender-training
+${PROJECT_HOME}/hippo/bin/monitor-stop recommender-training
 ```
 
 
@@ -243,7 +234,7 @@ recommender_system                       recommender-training
 #### Usage
 
 ```shell
-./bin/monitor-status SERVICE
+${PROJECT_HOME}/hippo/bin/monitor-status SERVICE
 ```
 
 #### Example
@@ -251,5 +242,5 @@ recommender_system                       recommender-training
 檢查 service `recommender-training` 狀態
 
 ```shell
-./bin/monitor-status recommender-training
+${PROJECT_HOME}/hippo/bin/monitor-status recommender-training
 ```
